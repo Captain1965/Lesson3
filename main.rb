@@ -9,7 +9,7 @@
      - Перемещать поезд по маршруту вперед и назад
      - Просматривать список станций и список поездов на станции
 =end
-  #require_relative 'seed'
+  require_relative 'show'
   require_relative 'wagon'
   require_relative 'wagon_passenger'
   require_relative 'wagon_cargo'
@@ -18,73 +18,59 @@
   require_relative 'train_cargo'
   require_relative 'station'
   require_relative 'route'
-
+                                            # Методы меню вагонов
   def wagon_make
-    puts 'Какой вагон необходим 1-грузовой , иное - пассажирский'
+    puts ' Какой вагон необходим 1-грузовой , иное - пассажирский'
     a2 = STDIN.gets.chomp
       wagon = WagonCargo.new if a2 == '1'
       wagon = WagonPassenger.new if a2 != '1'
-      puts 'Введите номер вагона '
+      puts ' Введите номер вагона '
       wagon.number = STDIN.gets.chomp
       return wagon
   end
 
-  def wagon_show(wagons)
-    puts ' У вас имеются вагоны'
-    wagons.each do |i| 
-    puts " вагон номер #{i.number} тип #{i.type}, состояние #{i.condition}"
-    end  
-  end
-
   def train_make
-     puts 'Какой состав вы формируете 1-грузовой , иное - пассажирский'
+     puts ' Какой состав вы формируете 1-грузовой , иное - пассажирский'
       a2 = STDIN.gets.chomp
       train = TrainCargo.new if a2 == '1'
       train = TrainPassenger.new if a2 != '1'
-      puts 'Введите номер поезда'
+      puts ' Введите номер поезда'
       a2 = STDIN.gets.chomp
       train.number = a2
       return train
   end 
-
-  def trains_show(trains)
-    puts "  Всего сфомированo поездов  #{trains.size}"
-    trains.each do |i|
-      puts " Поезд номер #{i.number} имеет тип #{i.type}      количество вагонов #{i.train_wagon.size}"
-    end  
-  end
-
+                                           # Методы меню поездов
   def train_add_wagon(trains,wagons)
     trains_show(trains)
-    puts 'выберите номер поезда для добавления вагонов'
+    puts ' Выберите номер поезда для добавления вагонов'
     a = STDIN.gets.chomp.to_i
-    t = 0       #номер элемента массива в списке поездов с выбранным номером
+    t = 0                                            #номер элемента массива в списке поездов с выбранным номером
     trains.each do |item|
       t = trains.index(item) if item.number == a
     end      
       wagon_show(wagons)
-      puts 'Выберите номер вагона'
-      w = 0     # номер элемента массива в списке вагонов выбранный для присоединения
+      puts ' Выберите номер вагона'
+      w = 0                                          # номер элемента массива в списке вагонов выбранный для присоединения
       a = STDIN.gets.chomp.to_i
       wagons.each do |item|
         w = wagons.index(item) if item.number == a
       end
          if wagons[w].type != trains[t].type
-          puts 'Типы поезда и вагона не совпадают'
+          puts ' Типы поезда и вагона не совпадают'
           return 
         elsif wagons[w].condition == 'busy'
           return
         else 
         trains[t].add(wagons[w])
-        wagons[w].condition = 'busy'          # Добавляем вагон к поезду
+        wagons[w].condition = 'busy'                       # Добавляем вагон к поезду
         end
   end
    
   def train_delete_wagon(trains,wagons)
     trains_show(trains)
-    puts 'выберите номер поезда для  уменьшения количества вагонов'
+    puts ' Выберите номер поезда для  уменьшения количества вагонов'
     a = STDIN.gets.chomp.to_i
-    t = 0   # номер элемента в списке массива 
+    t = 0                                                 # номер элемента в списке массива 
     trains.each do |item|
       t = trains.index(item) if item.number == a
     end 
@@ -93,60 +79,53 @@
   end
 
   def route_make(stations)
-    puts 'Ведите название начальной станции машрута из списка '
+    stations_name = []
+    stations.each do |item|
+     stations_name << item.name
+    end
     station_show(stations)
+    puts ' Введите название начальной станции машрута из списка '
     station_start = STDIN.gets.chomp
-    puts 'Введите название конечной станции'
+    puts ' Введите название конечной станции'
     station_end = STDIN.gets.chomp
-    route = Route.new(station_start,station_end)
+    if stations_name.include?(station_start) && stations_name.include?(station_end)
+      route = Route.new(station_start,station_end) 
+    else puts ' Выбранных станций нет в списке'
+      return      
+     end    
     return route
   end 
 
-  def route_show(routes)
-    puts ' Вы можете выбрать следующие машруты '
-    routes.each_with_index do |item, index|
-      puts " маршрут номер #{index} начало маршрута #{item.stations[0]} конец маршрута #{item.stations[-1]}"
-      puts "Промежуточныестанции по пути следования #{item.stations[1..-2]}"
+  def route_add(stations,routes)
+    stations_name = []
+    stations.each do |item|
+     stations_name << item.name
     end
-  end 
-
-  def rout_station_show
     route_show(routes)
-    puts ' Выберите номер маршрута'
-    i = STDIN.gets.chomp.to_i
-    routes[i].each do |item|
-      puts " Список станций по выбраному маршруту #{item}"
-    end  
-  end
-
-  def route_add(stations)
-    route_show(routes)
+    return if routes.empty?
     puts ' Выберите номер маршрута на котором хотите добавить станцию '
     i = STDIN.gets.chomp.to_i
     station_show(stations)
     puts ' Введите название станции которую хотите добавить на маршруте'
-    name = STDIN.gets.chomp
-    routes[i].add_station(name)
+    name1 = STDIN.gets.chomp
+      if stations_name.include?(name1) 
+              routes[i].add_station(name1) 
+      else puts ' Станции нет в списке' 
+      end
   end
 
-  def route_delete(stations)
-    route_station_show 
+  def route_delete(stations,routes)
+    route_show(routes)
+    return if routes.empty?
+    puts ' Выберите номер маршрута на котором хотите удалить станцию'
+    i = STDIN.gets.chomp.to_i
     puts ' Выберите название станции которую хотите удалить'
     name = STDIN.gets.chomp
     routes[i].delete_station(name)
   end
 
-  def train_route
-    trains_show(trains)
-    puts 'выберите номер поезда для назначения маршрута'
-    i = STDIN.gets.chomp
-    trains.each_with_index do |item ,index|
-      t = index if item.number == i
-    end
-  end
-
   def station_make(stations)
-  puts ' Введите название cтанции , для прекращения введите введите 0'
+  puts ' Введите названия cтанций , для прекращения введите 0'
   loop do
     name = STDIN.gets.chomp
       break if name == '0'
@@ -155,23 +134,55 @@
     return stations
   end
 
-  def station_show(stations)
-    puts 'У вас имеются следующие станции'
-    stations.each_with_index do |item, index|
-      puts "#{index+1} -  #{item.name}"
+  def train_assign_route(trains,routes)
+    trains_show(trains)
+    puts ' Выберите номер поезда для назначения маршрута'
+    a = STDIN.gets.chomp.to_i
+    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
     end
+    puts 
+    route_show(routes)      
+    return if routes.empty?
+    puts ' Выберите номер маршрута'
+    r = STDIN.gets.chomp.to_i
+    trains[t].route = routes[r]
+    trains[t].add_route
+    return trains[t]
+  end 
+
+  def trains_departure(trains)
+    trains_show(trains)
+    puts ' Выберите номер поезда для движения по маршруту'
+    a = STDIN.gets.chomp.to_i
+    t = 0                                                   # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
+    end
+    trains[t].departure
+    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
+    return trains[t]
   end
 
-  def trains_station_show
+  def trains_arrival(trains)
+    trains_show(trains)
+    puts ' Выберите номер поезда для движения по маршруту'
+    a = STDIN.gets.chomp.to_i
+    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
+    end
+    trains[t].arrival
+    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
+    return trains[t]
+  end 
 
-
-  end
-
-
-
+  
 
   MAIN_MENU =
-  '  Выберите тип операции 
+  '  
+    Выберите тип операции 
   1 - операции с вагонами
   2 - операции с поездами
   3 - операции со станциями
@@ -179,13 +190,15 @@
   0 - выйти'
 
   WAGOON_MENU =
-  '  Выберите операцию 
+  '  
+    Выберите операцию 
   1 - создать вагон
   2 - просмотреть все вагоны
   0 - вернуться в главное меню'
 
   TRAIN_MENU =
-  '  Выберите операцию
+  ' 
+     Выберите операцию
   1 - создать поезд
   2 - добавить вагон
   3 - удалить вагон
@@ -193,22 +206,24 @@
   5 - назначить маршрут поезду
   6 - поехать по маршруту
   7 - вернуться по маршруту
+  8 - просмотреть где находятся поезда 
   0 - вернуться в главное меню'
 
   STATION_MENU =
-  '  Выберите операцию
-  1 - создать станцию
+  '  
+    Выберите операцию
+  1 - создать список станций
   2 - просмотреть станции
   3 - просмотреть поезда на станции
   0 - вернуться в главное меню'
 
   ROUTES_MENU =
-  '  Выберите операцию 
+  '  
+    Выберите операцию 
   1 - создать маршрут
   2 - добавить станцию к маршруту
   3 - удалить станцию на маршруте
   4 - показать машруты
-  5 - показать список станций по маршруту
   0 - вернуться в главное меню'
 
   def start(wagons,trains,stations,routes) 
@@ -222,14 +237,14 @@
           puts WAGOON_MENU
           b = STDIN.gets.chomp
             case b 
-            when '1'                              #создать вагон
-              wagons << wagon_make
-            when '2'                              #показать список вагонов
-              wagon_show(wagons)
-            when '0'            #выйти
-              break
+            when '1'                              
+              wagons << wagon_make                # создать вагон и добавить его в список вагонов
+            when '2'                              
+              wagon_show(wagons)                  # показать список вагонов
+            when '0'                          
+              break                               #выйти 
             else 
-            puts 'Сделайте Ваш выбор'
+            puts ' Сделайте Ваш выбор'
             end
           end 
         when '2' 
@@ -237,22 +252,24 @@
           puts TRAIN_MENU
           b = STDIN.gets.chomp                 
             case b
-            when '1' # сформировать поезд
-              trains << train_make
+            when '1' 
+              trains << train_make                 # создать и добавить в список поездов
             when '2' 
-              train_add_wagon(trains,wagons)  # добавить вагон
+              train_add_wagon(trains,wagons)       # поезду добавить вагон
             when '3' 
-               train_delete_wagon(trains,wagons) # отцепить вагон
+              train_delete_wagon(trains,wagons)    # отцепить вагон
             when '4' 
-               trains_show(trains)         # просмотреть список поездов
+              trains_show(trains)                  # просмотреть список поездов
             when '5'
-                train_route  # назначить маршрут поезду
+              train_assign_route(trains,routes)    # поезду назначить маршрут 
             when '6'
-                  # Поехать по маршруту
+              trains_departure(trains)             # Поехать по маршруту на одну станцию
             when '7'        
-                  # Вернуться по маршруту
+              trains_arrival(trains)               # Вернуться по маршруту на одну станцию
+            when '8'
+              trains_number_station_show(stations,trains) # Показать номера поездов и станции где они находятся     
             when '0'
-            break        # Вернуться в главное меню
+            break                                  # Вернуться в главное меню
             else 
              puts " Сделайте Ваш выбор"
             end
@@ -263,15 +280,15 @@
           b = STDIN.gets.chomp
             case b
             when '1'
-              station_make(stations)        #Создать список станций
+              station_make(stations)                # Создать список станций
             when '2'
-              station_show(stations)          #Просмотреть станции
-            when '3'
-              trains_station_show    #Просмотреть поезда на станции
+              station_show(stations)                # Просмотреть станции
+            #when '3'
+             # station_train_show(stations,trains)   # Просмотреть поезда на станции
             when '0'
-              break       #Вернуться в главное меню
+              break                                 # Вернуться в главное меню
             else 
-              puts "Сделайте ваш выбор"
+              puts " Сделайте ваш выбор"
             end
           end 
 
@@ -283,21 +300,21 @@
           b = STDIN.gets.chomp
             case b
             when '1'
-                 routes << route_make(stations)    #Создать маршрут
+              routes << route_make(stations)        # Маршрут создать и добавить в список маршрутов
             when '2'
-                 route_add(stations)          #Добавить станцию к маршрут
+              route_add(stations,routes)            # Добавить станцию к маршруту
             when '3'
-                 route_delete(stations)       #Удалить станцию из маршрута
+              route_delete(stations,routes)         # Удалить станцию из маршрута
             when '4' 
-                 route_show(routes)         #показать маршруты
-            when '5'        
-                 route_station_show         # показать список станций по маршруту            
+              route_show(routes)                    # показать маршруты   
             when '0'  
-             break         #вернуться в главное меню
+             break                                  # вернуться в главное меню
             else 
-            puts 'Сделайте Ваш выбор'
+            puts ' Сделайте Ваш выбор'
             end 
           end
-        end 
+        when '0'
+          break
+        end        
       end    
     end   

@@ -16,25 +16,11 @@ class Route
 
 	def add_station(station)
 		@stations << station
-		stations[-1], stations[-2] = stations[-2], stations[-1]
+		@stations[-1], @stations[-2] = @stations[-2], @stations[-1]
+		
 	end 
 	def delete_station(station)
 		@stations.delete(station)
 	end 
 end
 
-=begin
-routes =[]
-a = Route.new('a','b')
-routes << a 
-b = Route.new('c','d')
-routes << b 
-
-puts routes[0].stations[0]
-puts routes[1].stations[1]
-puts routes[1].add_station('e')
-print routes[1].stations
-print routes[0].stations 
-puts routes[0].delete_station('e')
-print routes[0].stations
-=end

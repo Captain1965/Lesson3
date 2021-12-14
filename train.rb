@@ -12,32 +12,30 @@
 -Возвращать предыдущую станцию, текущую, следующую, на основе маршрута 
 =end
 class Train
-    attr_accessor :number
-	attr_writer :route
-	attr_reader :curent_speed,
-
+  attr_accessor :number, :route
+  attr_reader :curent_speed, :curent_station_index
   def initialize
-		@curent_speed = 0
-	end
+    @curent_speed = 0
+    @route = []
+  end
   
   def speed(value)
-  	@curent_speed +=value
+    @curent_speed +=value 
   end
 
   def stop
-  	@curent_speed = 0
+    @curent_speed = 0
   end
 
-  def add_route(route)
-  	@route = route 
-  	@curent_station_index = 0
-  end	
+  def add_route
+    @curent_station_index = 0
+  end 
 
   def departure
-  	curent_station_index +=1 if curent_station_index < route.size-1
+    @curent_station_index +=1 if @curent_station_index < @route.stations.size-1
   end
 
   def arrival
-  	curent_station_index -=1 if curent_station_index >= 1
+    @curent_station_index -=1 if @curent_station_index >= 1
   end
 end 

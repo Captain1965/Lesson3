@@ -8,22 +8,22 @@
 находящихся на станции).
 =end
 class Station
-	attr_reader :trains, :name
-
+	attr_reader :trains_station, :name
+	attr_writer :train
 	def initialize(name)
 		@name = name
-		@trains = []
+		trains_station = []
 	end 
 
-	def trains_by_type(type)
-		trains.count(type)
+	def trains
+		trains_station.count
 	end
 
 	def arrive_train(train)
-		@trains << train
+		@trains_station << train
 	end
 
-	def gone_train(number)
+	def gone_train(train)
 		@trains.delete(train)
 	end
 

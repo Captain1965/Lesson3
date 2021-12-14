@@ -11,6 +11,7 @@ class TrainCargo < Train
 
 	def add(wagon_cargo)
 		train_wagon << wagon_cargo
+		
 	end
 
 	def delete
