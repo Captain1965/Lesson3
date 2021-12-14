@@ -28,7 +28,17 @@
       wagon.number = STDIN.gets.chomp
       return wagon
   end
-
+                                          # Методы меню станций
+  def station_make(stations)
+  puts ' Введите названия cтанций , для прекращения введите 0'
+  loop do
+    name = STDIN.gets.chomp
+      break if name == '0'
+      stations << Station.new(name) 
+    end 
+    return stations
+  end
+                                                   # Методы меню поездов
   def train_make
      puts ' Какой состав вы формируете 1-грузовой , иное - пассажирский'
       a2 = STDIN.gets.chomp
@@ -39,19 +49,20 @@
       train.number = a2
       return train
   end 
-                                           # Методы меню поездов
+                                                    # Метод добавления вагона к поезду                                
   def train_add_wagon(trains,wagons)
+    return if trains.empty? || wagons.empty?
     trains_show(trains)
     puts ' Выберите номер поезда для добавления вагонов'
-    a = STDIN.gets.chomp.to_i
-    t = 0                                            #номер элемента массива в списке поездов с выбранным номером
+    a = STDIN.gets.chomp
+    t = 0                            #номер элемента массива в списке поездов с выбранным номером
     trains.each do |item|
       t = trains.index(item) if item.number == a
     end      
       wagon_show(wagons)
       puts ' Выберите номер вагона'
       w = 0                                          # номер элемента массива в списке вагонов выбранный для присоединения
-      a = STDIN.gets.chomp.to_i
+      a = STDIN.gets.chomp
       wagons.each do |item|
         w = wagons.index(item) if item.number == a
       end
@@ -62,23 +73,72 @@
           return
         else 
         trains[t].add(wagons[w])
-        wagons[w].condition = 'busy'                       # Добавляем вагон к поезду
+        wagons[w].condition = 'busy'                       
         end
+        return trains
   end
-   
+                                                    # метод удаления вагона из поезда
   def train_delete_wagon(trains,wagons)
     trains_show(trains)
     puts ' Выберите номер поезда для  уменьшения количества вагонов'
-    a = STDIN.gets.chomp.to_i
+    a = STDIN.gets.chomp
     t = 0                                                 # номер элемента в списке массива 
     trains.each do |item|
       t = trains.index(item) if item.number == a
     end 
     trains[t].train_wagon[-1].condition = 'free' 
     trains[t].delete         
+  end                                                          
+
+def train_assign_route(trains,routes)
+    trains_show(trains)
+    puts ' Выберите номер поезда для назначения маршрута'
+    a = STDIN.gets.chomp
+    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
+    end
+    puts 
+    route_show(routes)      
+    return if routes.empty?
+    puts ' Выберите номер маршрута'
+    r = STDIN.gets.chomp.to_i
+    trains[t].route = routes[r]
+    trains[t].add_route
+    return trains[t]
+  end 
+
+  def trains_departure(trains)
+    trains_show(trains)
+    puts ' Выберите номер поезда для движения по маршруту'
+    a = STDIN.gets.chomp.to_i
+    t = 0                                                   # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
+    end
+    trains[t].departure
+    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
+    return trains[t]
   end
 
+  def trains_arrival(trains)
+    trains_show(trains)
+    puts ' Выберите номер поезда для движения по маршруту'
+    a = STDIN.gets.chomp
+    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
+    trains.each do |item|
+      t = trains.index(item) if item.number == a
+    end
+    trains[t].arrival
+    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
+    return trains[t]
+  end 
+                                                            # методы меню маршрутов
   def route_make(stations)
+    if stations.empty?
+      puts 'Нет станций для формирования маршрута , создайте список станций'
+      return
+    end
     stations_name = []
     stations.each do |item|
      stations_name << item.name
@@ -124,60 +184,9 @@
     routes[i].delete_station(name)
   end
 
-  def station_make(stations)
-  puts ' Введите названия cтанций , для прекращения введите 0'
-  loop do
-    name = STDIN.gets.chomp
-      break if name == '0'
-      stations << Station.new(name) 
-    end 
-    return stations
-  end
+  
 
-  def train_assign_route(trains,routes)
-    trains_show(trains)
-    puts ' Выберите номер поезда для назначения маршрута'
-    a = STDIN.gets.chomp.to_i
-    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
-    trains.each do |item|
-      t = trains.index(item) if item.number == a
-    end
-    puts 
-    route_show(routes)      
-    return if routes.empty?
-    puts ' Выберите номер маршрута'
-    r = STDIN.gets.chomp.to_i
-    trains[t].route = routes[r]
-    trains[t].add_route
-    return trains[t]
-  end 
-
-  def trains_departure(trains)
-    trains_show(trains)
-    puts ' Выберите номер поезда для движения по маршруту'
-    a = STDIN.gets.chomp.to_i
-    t = 0                                                   # номер элемента массива в списке поездов с выбранным номером
-    trains.each do |item|
-      t = trains.index(item) if item.number == a
-    end
-    trains[t].departure
-    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
-    return trains[t]
-  end
-
-  def trains_arrival(trains)
-    trains_show(trains)
-    puts ' Выберите номер поезда для движения по маршруту'
-    a = STDIN.gets.chomp.to_i
-    t = 0                                                    # номер элемента массива в списке поездов с выбранным номером
-    trains.each do |item|
-      t = trains.index(item) if item.number == a
-    end
-    trains[t].arrival
-    puts " Поезд находится на станции #{trains[t].route.stations[trains[t].curent_station_index]}"
-    return trains[t]
-  end 
-
+  
   
 
   MAIN_MENU =
@@ -226,13 +235,17 @@
   4 - показать машруты
   0 - вернуться в главное меню'
 
-  def start(wagons,trains,stations,routes) 
+#  def start
+    wagons = []
+    trains = []
+    routes = []
+    stations = []
+
       loop do
       puts MAIN_MENU
       a = STDIN.gets.chomp
         case a 
         when '1' #операции с вагонами
-         #wagons =[]
           loop do
           puts WAGOON_MENU
           b = STDIN.gets.chomp
@@ -248,6 +261,7 @@
             end
           end 
         when '2' 
+          
           loop do
           puts TRAIN_MENU
           b = STDIN.gets.chomp                 
@@ -275,6 +289,7 @@
             end
           end
         when '3' 
+          
           loop do
           puts STATION_MENU
           b = STDIN.gets.chomp
@@ -283,8 +298,8 @@
               station_make(stations)                # Создать список станций
             when '2'
               station_show(stations)                # Просмотреть станции
-            #when '3'
-             # station_train_show(stations,trains)   # Просмотреть поезда на станции
+            when '3'
+              station_train_show(stations,trains)   # Просмотреть поезда на станции
             when '0'
               break                                 # Вернуться в главное меню
             else 
@@ -293,8 +308,7 @@
           end 
 
         when '4'
-
-
+          #routes = []
           loop do
           puts ROUTES_MENU
           b = STDIN.gets.chomp
@@ -317,4 +331,4 @@
           break
         end        
       end    
-    end   
+   # end   

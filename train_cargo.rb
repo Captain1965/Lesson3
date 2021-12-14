@@ -10,13 +10,13 @@ class TrainCargo < Train
   end
 
 	def add(wagon_cargo)
-		train_wagon << wagon_cargo
+		@train_wagon << wagon_cargo
 		
 	end
 
 	def delete
-		if train_wagon.size > 0
-			train_wagon.delete_at(-1) 
+		if @train_wagon.size > 0
+			@train_wagon.delete_at(-1) 
 		else 
 			puts 'нет вагонов для удаления'
 		end

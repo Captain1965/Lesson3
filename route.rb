@@ -23,4 +23,13 @@ class Route
 		@stations.delete(station)
 	end 
 end
-
+=begin
+r = Route.new('a','b')
+puts r.stations
+puts
+r.add_station('c') 
+puts r.stations
+puts 
+r.delete_station('b')
+puts r.stations
+=end
