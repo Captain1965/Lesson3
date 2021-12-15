@@ -14,10 +14,11 @@
   require_relative 'wagon_passenger'
   require_relative 'wagon_cargo'
   require_relative 'train'
-  require_relative 'train_passenger'
-  require_relative 'train_cargo'
+  require_relative 'passenger_train'
+  require_relative 'cargo_train'
   require_relative 'station'
   require_relative 'route'
+   
                                             # Методы меню вагонов
   def wagon_make
     puts ' Какой вагон необходим 1-грузовой , иное - пассажирский'
@@ -42,8 +43,8 @@
   def train_make
      puts ' Какой состав вы формируете 1-грузовой , иное - пассажирский'
       a2 = STDIN.gets.chomp
-      train = TrainCargo.new if a2 == '1'
-      train = TrainPassenger.new if a2 != '1'
+      train = CargoTrain.new if a2 == '1'
+      train = PassengerTrain.new if a2 != '1'
       puts ' Введите номер поезда'
       a2 = STDIN.gets.chomp
       train.number = a2
@@ -69,11 +70,8 @@
          if wagons[w].type != trains[t].type
           puts ' Типы поезда и вагона не совпадают'
           return 
-        elsif wagons[w].condition == 'busy'
-          return
         else 
-        trains[t].add(wagons[w])
-        wagons[w].condition = 'busy'                       
+          trains[t].add_wagon(wagons[w])                     
         end
         return trains
   end
@@ -86,8 +84,7 @@
     trains.each do |item|
       t = trains.index(item) if item.number == a
     end 
-    trains[t].train_wagon[-1].condition = 'free' 
-    trains[t].delete         
+    trains[t].delete_wagon        
   end                                                          
 
 def train_assign_route(trains,routes)
@@ -143,16 +140,17 @@ def train_assign_route(trains,routes)
     stations.each do |item|
      stations_name << item.name
     end
-    station_show(stations)
-    puts ' Введите название начальной станции машрута из списка '
-    station_start = STDIN.gets.chomp
-    puts ' Введите название конечной станции'
-    station_end = STDIN.gets.chomp
-    if stations_name.include?(station_start) && stations_name.include?(station_end)
-      route = Route.new(station_start,station_end) 
-    else puts ' Выбранных станций нет в списке'
-      return      
-     end    
+      station_show(stations)
+      puts ' Введите название начальной станции машрута из списка '
+      station_start = STDIN.gets.chomp
+      puts ' Введите название конечной станции'
+      station_end = STDIN.gets.chomp
+      if stations_name.include?(station_start) && stations_name.include?(station_end)
+        route = Route.new(station_start,station_end) 
+      else 
+        puts ' Выбранных станций нет в списке'
+        return route = 0
+      end 
     return route
   end 
 
@@ -183,12 +181,7 @@ def train_assign_route(trains,routes)
     name = STDIN.gets.chomp
     routes[i].delete_station(name)
   end
-
   
-
-  
-  
-
   MAIN_MENU =
   '  
     Выберите тип операции 
@@ -308,7 +301,6 @@ def train_assign_route(trains,routes)
           end 
 
         when '4'
-          #routes = []
           loop do
           puts ROUTES_MENU
           b = STDIN.gets.chomp

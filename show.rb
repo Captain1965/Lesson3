@@ -1,26 +1,26 @@
-#encoding utf-8
-
+#encoding utf-8 
 def wagon_show(wagons)
   return if wagons.empty?                                              # показать список вагонов
   puts ' У вас имеются вагоны'
   wagons.each do |i| 
-    puts " вагон номер #{i.number} тип #{i.type}, состояние #{i.condition}"
+    puts " вагон номер #{i.number} тип #{i.type}"
     end  
 end
 
 def trains_show(trains)                                               # просмотреть список поездов
   puts "  Всего сфомированo поездов  #{trains.size}"
-  trains.each do |i|      puts " Поезд номер #{i.number} имеет тип #{i.type}      количество вагонов #{i.train_wagon.size}"
+  #puts trains[0].wagons
+  #puts trains[1] 
+  trains.each do |i|      puts " Поезд номер #{i.number} имеет тип #{i.type}     количество вагонов #{i.wagons.size}"
   end  
 end
 
-def route_show(routes,stations)                                                # показать маршруты  
+def route_show(routes,stations)                                              # показать маршруты  
   if routes.empty? || stations.empty?
     puts ' В списке нет сформированных маршрутов'
     return 
   else puts ' Вы можете выбрать следующие маршруты :'
-  end  
-  puts
+  end 
   routes.each_with_index do |item, index|
     puts " маршрут №  #{index}     начало маршрута #{item.stations[0]}    конец маршрута #{item.stations[-1]}"
     puts " Станции по пути следования :"

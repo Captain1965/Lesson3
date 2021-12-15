@@ -12,12 +12,25 @@
 -Возвращать предыдущую станцию, текущую, следующую, на основе маршрута 
 =end
 class Train
-  attr_accessor :number, :route
+  attr_accessor :number, :route, :wagons, :wagon
   attr_reader :curent_speed, :curent_station_index
   def initialize
     @curent_speed = 0
     @route = []
+    @wagons = []
   end
+
+  def add_wagon(wagon)
+    @wagons << wagon
+  end 
+
+  def delete_wagon 
+    if @wagons.size > 0
+      @wagons.delete_at(-1)
+    else 
+      puts 'нет вагонов для удаления'
+    end        
+  end 
   
   def speed(value)
     @curent_speed +=value 
