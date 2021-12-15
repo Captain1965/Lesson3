@@ -99,7 +99,7 @@ def train_assign_route(trains,routes)
       t = trains.index(item) if item.number == a
     end
     puts 
-    route_show(routes)      
+    route_show(routes,stations)      
     return if routes.empty?
     puts ' Выберите номер маршрута'
     r = STDIN.gets.chomp.to_i
@@ -161,7 +161,7 @@ def train_assign_route(trains,routes)
     stations.each do |item|
      stations_name << item.name
     end
-    route_show(routes)
+    route_show(routes,stations)
     return if routes.empty?
     puts ' Выберите номер маршрута на котором хотите добавить станцию '
     i = STDIN.gets.chomp.to_i
@@ -175,7 +175,7 @@ def train_assign_route(trains,routes)
   end
 
   def route_delete(stations,routes)
-    route_show(routes)
+    route_show(routes,stations)
     return if routes.empty?
     puts ' Выберите номер маршрута на котором хотите удалить станцию'
     i = STDIN.gets.chomp.to_i
@@ -320,7 +320,7 @@ def train_assign_route(trains,routes)
             when '3'
               route_delete(stations,routes)         # Удалить станцию из маршрута
             when '4' 
-              route_show(routes)                    # показать маршруты   
+              route_show(routes,stations)                    # показать маршруты   
             when '0'  
              break                                  # вернуться в главное меню
             else 

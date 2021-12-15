@@ -14,15 +14,15 @@ def trains_show(trains)                                               # прос
   end  
 end
 
-def route_show(routes)                                                # показать маршруты  
-  if routes.empty? 
+def route_show(routes,stations)                                                # показать маршруты  
+  if routes.empty? || stations.empty?
     puts ' В списке нет сформированных маршрутов'
     return 
   else puts ' Вы можете выбрать следующие маршруты :'
   end  
   puts
   routes.each_with_index do |item, index|
-    puts " маршрут №  #{index}     начало маршрута #{item.stations[0]}      конец маршрута #{item.stations[-1]}"
+    puts " маршрут №  #{index}     начало маршрута #{item.stations[0]}    конец маршрута #{item.stations[-1]}"
     puts " Станции по пути следования :"
     item.stations.each do |i|
       print "  #{i}"
